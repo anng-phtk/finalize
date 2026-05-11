@@ -1,0 +1,355 @@
+/**
+ * Steel Frame Structural Contract (No Visual Styles)
+ * 
+ * Contract:
+ * - .grid owns the viewport and establishes grid areas.
+ * - All layout containers (layout-*) clip their overflow.
+ * - Inner panels / child elements expand to 100% of their parent.
+ * - Panel content areas scroll, outer shell never scrolls.
+ */
+:root {
+    /* ========== GREYSCALE CORE ========== */
+    --sf-gray-0: #f8f9fa;      /* page background */
+    --sf-gray-1: #f1f3f5;      /* panel background */
+    --sf-gray-2: #e9ecef;      /* title background, subtle dividers */
+    --sf-gray-3: #dee2e6;      /* main border colour */
+    --sf-gray-4: #ced4da;      /* slightly stronger border (hover/focus) */
+    --sf-gray-5: #c7c7c7;
+    --sf-gray-9: #212529;      /* primary text colour */
+    --sf-gray-10: slategray;
+    /* ========== FONTS ========== */
+    /* Sans‑serif: thin, clean, readable at small sizes */
+    --sf-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    /* Monospace: for code / data – keeps its character even when font-size is reduced */
+    --sf-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    
+    /* Use sans by default */
+    --sf-font-family: var(--sf-font-sans);
+    
+    /* Text colours */
+    --sf-color: var(--sf-gray-9);
+    --sf-title-font-color: var(--sf-gray-9);   /* dark text on light title bg */
+    
+    /* Backgrounds */
+    --sf-title-bg: var(--sf-gray-5);
+    --sf-panel-bg: var(--sf-gray-1);
+    --sf-panel-title-bg: var(--sf-gray-4);
+    --sf-title-bold: bold;
+    
+    /* Borders */
+    --sf-border: var(--sf-gray-3);
+    --sf-pane-border: var(--sf-gray-3);
+    
+    /* Panel shadow (subtle, never on titles) */
+    --sf-panel-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: sans-serif;
+    font-size: small;
+    color: var(--sf-color)
+}
+
+/* Grid layout – defines areas, no visual styling */
+.grid {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    grid-template-areas:
+        "header header header"
+        "left main right"
+        "footer footer footer";
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 2px;               
+}
+
+/* All direct children of .grid must clip and not overflow */
+.grid > * {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding:2px;
+}
+
+.grid > div {
+    border: 1px solid var(--sf-border);
+}
+
+/* Named layout regions */
+.layout-header {
+    grid-area: header;
+    min-height: 55px;
+}
+.layout-left {
+    grid-area: left;
+    width: 330px;
+    min-width: 33px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+.layout-right {
+    grid-area: right;
+    width: 330px;
+    min-width: 30px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+
+}
+.layout-footer {
+    grid-area: footer;
+    height: 330px;
+    min-height: 30px;
+    overflow: hidden;
+    transition: height 0.3s ease-in-out, min-height 0.3s ease-in-out;
+}
+
+/* Alternative naming for compatibility */
+.layout-content {
+    grid-area: main;
+}
+
+/* Generic flex helpers (structural only) */
+.app-row {
+    display: flex;
+    flex-direction: row;
+    min-width: 0;
+    min-height: 0;
+}
+.app-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+.flex-1 {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+}
+.flex-fill {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+.flex-grow {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+
+
+/* Collapse utility (structural only – hides content, keeps handle) */
+.collapsed {
+    width: 30px;
+}
+.collapsed-vertical {
+    height: 30px;
+}
+.collapsed > :not(.collapse-handle),
+.collapsed-vertical > :not(.collapse-handle) {
+    display: none;
+}
+
+.expanded {
+    width: 400px;
+}
+
+
+.expanded-vertical {
+    height: 400px;
+}
+
+/**
+ * Panel Structural Contract (No Visual Styles)
+ * 
+ * - .panel: grid layout with rows: auto (header) / 1fr (content) / auto (footer)
+ * - .panel-header: flex container with auto margins for title centering
+ * - .panel-icon, .panel-title, .panel-ctrl: properly aligned
+ * - .panel-content: scrolls when content overflows
+ * - .panel-footer: fixed height (or auto) at bottom
+ */
+
+.panel {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;          /* fill parent container */
+    width: 100%;           /* fill parent container */
+    overflow: hidden;      /* enforce child scrolling */
+    padding: 2px;
+    border: 1px solid #cecece;
+}
+
+.panel-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;              /* minimal spacing, can be overridden */
+    min-width: 0;
+    overflow: hidden;
+    background-color: var(--sf-panel-title-bg);
+    font-weight: var(--sf-title-bold);
+}
+
+.panel-icon {
+    flex: 0 0 auto;
+    order: 1;
+}
+
+.panel-title {
+    flex: 1 1 auto;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    order: 2;
+    font-weight: var(--sf-title-bold);
+    height:25px;
+    justify-self: center;
+    align-content: center;
+}
+
+.panel-ctrl {
+    flex: 0 0 auto;
+    margin-left: auto;     /* push to right */
+    order: 3;
+    display: flex;
+    gap: 4px;
+}
+
+.panel-content {
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;        /* scroll when content overflows */
+}
+
+.panel-footer {
+    flex: 0 0 auto;
+    min-height: 0;
+}
+
+.pane-title {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    grid-template-areas: "ico txt ctrl";
+    overflow: hidden;      /* enforce child scrolling */
+    width: 100%;           /* fill parent container */
+    height: 35px;
+}
+.pane-title>* {
+    font-family: var(--sf-font-family);
+    color:var(--sf-title-font-color);
+    font-weight: var(--sf-title-bold);
+}
+.title-icon {
+    grid-area: ico;
+    min-width:20px;
+    align-content: center;
+    align-self: center;
+    justify-self: center;
+    align-items: center;
+}
+.title-text {
+    grid-area: txt;
+    text-align: left;
+    justify-content: left;
+    align-self: center;
+    justify-self: left;
+    align-items: center;
+
+}
+.title-ctrl {
+    grid-area: ctrl;
+    min-width: 30px;
+    align-self: center;
+    justify-self: center;
+    align-items: center;
+    padding:4px;
+}
+/**
+.title-ctrl > button {
+    background-color:transparent;
+    border: 1px solid whitesmoke;
+    color:white;
+    box-shadow: 0;
+}
+    */
+
+/** Look and feel rules * */
+/* Apply page background and font */
+body {
+    background-color: var(--sf-gray-0);
+    font-family: var(--sf-font-family);
+    font-size: 0.8125rem;   /* 13px – small but readable */
+    font-weight: 400;        /* regular weight – 'thin' is too light for body text */
+    line-height: 1.4;
+    color: var(--sf-color);
+}
+
+/* Panels get a background and a soft shadow */
+.panel {
+    background: var(--sf-panel-bg);
+    box-shadow: var(--sf-panel-shadow);
+    
+}
+
+/* Panel content area can have a slightly lighter or matching background */
+.panel-content {
+    background: inherit;
+    padding: 8px;             /* comfortable breathing room */
+}
+
+/* Title bars – no shadow, only a subtle bottom border */
+.pane-title {
+    background-color: var(--sf-title-bg);
+    border-bottom: 1px solid var(--sf-border);
+    color: var(--sf-title-font-color);
+    /* remove any inherited shadow */
+    box-shadow: none;
+}
+
+/* Keep the grid item borders subtle (already using --sf-border) */
+.grid > div {
+    border: 1px solid var(--sf-border);
+    background-color: var(--sf-gray-0);  /* match page background */
+
+}
+
+/* All buttons inside .title-ctrl – minimal styling, no heavy borders */
+.title-ctrl > button {
+    background-color: transparent;
+    border: 1px solid var(--sf-gray-4);
+    color: var(--sf-gray-9);
+    border-radius: 3px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+.title-ctrl > button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Optional: monospace utility class – for data grids, logs, etc. */
+.mono, code, pre, .sf-monospace {
+    font-family: var(--sf-font-mono);
+    font-size: 0.75rem;   /* stays crisp even when small */
+    background-color: var(--sf-gray-2);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="/css/steel-frame.core.css" />
+    <title>finalize</title>
+</head>
+
+<body>
+    <div id="app-grid" class="grid">
+        <!-- header -->
+        <div class="layout-header">
+            <div id="toolbar-container"></div>
+        </div>
+
+        <!-- main -->
+        <div class="layout-content">Content</div>
+        <!-- left-->
+        <div id="main-left" class="layout-left">
+            <!-- Left -->
+            <div id="left-pane-title" class="pane-title">
+                <div class="title-icon">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <div class="title-text">Left</div>
+                <div class="title-ctrl">
+                    <button id="btn-expand-left" data-bs-toggle="tooltip" data-bs-title="Disabled tooltip">
+                        <i class="bi bi-arrows-expand-vertical"></i>
+                    </button>
+
+                    <button id="btn-collapse-left">
+                        <i class="bi bi-textarea-resize"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- right -->
+        <div id="main-right" class="layout-right app-col">
+            <!-- Right -->
+            <div class="pane-title">
+                <div class="title-icon">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div class="title-text">Intelligence</div>
+                <div class="title-ctrl">
+
+                    <button id="btn-expand-right">
+                        <i class="bi bi-arrows-expand-vertical"></i>
+                    </button>
+
+                    <button id="btn-collapse-right">
+                        <i class="bi bi-textarea-resize"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel flex-grow">
+                <div class="panel-header">
+                    <div class="panel-icon">I</div>
+                    <div class="panel-title">Panel Title</div>
+                    <div class="panel-ctrl">C</div>
+                </div>
+                <div class="panel-content">
+                    Hello world
+                </div>
+                <div class="panel-footer">
+                    footer
+                </div>
+            </div>
+        </div>
+        <!-- footer -->
+        <div id="main-footer" class="layout-footer">
+            <!-- Footer -->
+            <div class="pane-title">
+                <div class="title-icon">
+                    <i class="bi clipboard2-data"></i>
+                </div>
+                <div class="title-text">Intelligence</div>
+                <div class="title-ctrl">
+                    <button id="btn-collapse-footer">
+                        <i class="bi bi-pin-angle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTML to write -->
+    <a href="#" data-bs-toggle="tooltip" data-bs-title="Some tooltip text!">Hover over me</a>
+
+    <script type="module" src="/src/core/App.ts"></script>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="/css/sf-toolbar.css" />
+<!-- toolbar-fieldsets.html -->
+<div class="sf-commandbar" role="region" aria-label="Filing command bar">
+    <fieldset class="sf-fieldset sf-fieldset--ticker">
+        <legend>Ticker</legend>
+        <input id="in-ticker" name="ticker" type="text" value="AAPL" autocomplete="off" spellcheck="false">
+    </fieldset>
+
+    <fieldset class="sf-fieldset sf-fieldset--peers">
+        <legend>Peers</legend>
+
+        <input id="in-peer-1" name="peer1" type="text" value="GOOG" placeholder="Peer 1" autocomplete="off" spellcheck="false">
+        <button id="btn-swap-1" class="sf-btn" type="button" aria-label="Swap ticker with peer 1">
+            <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
+        </button>
+
+        <input id="in-peer-2" name="peer2" type="text" value="MSFT" placeholder="Peer 2" autocomplete="off" spellcheck="false">
+        <button id="btn-swap-2" class="sf-btn" type="button" aria-label="Swap ticker with peer 2">
+            <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
+        </button>
+
+        <input id="in-peer-3" name="peer3" type="text" value="AMZN" placeholder="Peer 3" autocomplete="off" spellcheck="false">
+        <button id="btn-swap-3" class="sf-btn" type="button" aria-label="Swap ticker with peer 3">
+            <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
+        </button>
+    </fieldset>
+
+    <fieldset class="sf-fieldset sf-fieldset--report">
+        <legend>Report</legend>
+        <select id="sel-reportType" name="reportType">
+            <option value="ANNUAL">10K</option>
+            <option value="QUARTERLY">10Q</option>
+            <option value="VALUATION">Both</option>
+        </select>
+    </fieldset>
+
+    <fieldset class="sf-fieldset sf-fieldset--refresh">
+        <legend>SEC</legend>
+        <label class="sf-check">
+            <input id="cb-refresh" name="refreshFromSec" type="checkbox" value="true">
+            <span>Refresh filing</span>
+        </label>
+    </fieldset>
+
+    <fieldset class="sf-fieldset sf-fieldset--actions" aria-label="Actions">
+        <legend>Actions</legend>
+        <button id="btn-fetch" class="sf-btn sf-btn--primary" type="button">
+            <i class="bi bi-router" aria-hidden="true"></i>
+            <span>Fetch</span>
+        </button>
+
+        <button id="btn-clear" class="sf-btn sf-btn--danger" type="button">
+            <i class="bi bi-trash" aria-hidden="true"></i>
+            <span>Clear</span>
+        </button>
+    </fieldset>
+
+    <fieldset class="sf-fieldset sf-fieldset--session">
+        <legend>Session</legend>
+        <button id="btn-logout" class="sf-btn" type="button">
+            <i class="bi bi-door-open" aria-hidden="true"></i>
+            <span>Logout</span>
+        </button>
+    </fieldset>
+</div>
