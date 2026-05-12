@@ -1,55 +1,50 @@
-
 export class PeersStore {
+    private peers: Map<string, string[]> = new Map();
 
-    private peers: Map<string, Set<string>> = new Map();
-    normalizeTicker(ticker: string): string {
-        return ticker.trim();
+    private normalizeTicker(ticker: string): string {
+        return ticker.trim().toUpperCase();
     }
 
-    setPeers(ticker: string, peerTickers: string[]): void {
+    public setPeers(ticker: string, peerTickers: string[]): void {
         const normalTicker = this.normalizeTicker(ticker);
+        if (!normalTicker) return;
 
-        if (!normalTicker) {
-            return;
-        }
+        const cleanPeers = peerTickers
+            .map(p => this.normalizeTicker(p))
+            .filter(p => p && p !== normalTicker)
+            .slice(0, 3);
 
-        const peerSet = new Set<string>();
-
-        for (const peer of peerTickers) {
-            const normalPeer = this.normalizeTicker(peer);
-            if (!normalPeer) {
-                continue;
-            }
-            
-            if (normalPeer === normalTicker) {
-                continue;
-            }
-
-            peerSet.add(normalPeer);
-
-            if (peerSet.size >= 3) {
-                break;
-            }
-        }
-
-        this.peers.set(normalTicker, peerSet);
+        this.peers.set(normalTicker, cleanPeers);
     }
 
-    getPeers(ticker: string): Array<string> {
-        const normalTicker: string = this.normalizeTicker(ticker);
+    /**
+     * Search strategy: 
+     * 1. Check if the ticker is a primary key (direct match).
+     * 2. If not, search all peer lists to see if this ticker belongs to a cohort.
+     * 3. If found in a cohort, return the other members of that group.
+     */
+    public getPeers(ticker: string): string[] {
+        const target = this.normalizeTicker(ticker);
 
-        if (!this.peers.has(normalTicker)) return [];
+        // 1. Direct match
+        if (this.peers.has(target)) {
+            return this.peers.get(target) || [];
+        }
 
-        const listPeers: string[] = new Array();
-        this.peers.get(normalTicker)?.forEach((peer: string) => {
-            listPeers.push(this.normalizeTicker(peer));
-        });
+        // 2. Deep search cohorts
+        for (const [primary, peers] of this.peers.entries()) {
+            if (peers.includes(target)) {
+                // Return the primary + other peers (excluding the target itself)
+                return [primary, ...peers.filter(p => p !== target)].slice(0, 3);
+            }
+        }
 
-        return listPeers;
+        return [];
     }
 
-    clearPeers(ticker: string): void {
-        const normalTicker: string = this.normalizeTicker(ticker);
-        if (this.peers.has(ticker)) this.peers.delete(normalTicker);
+    public clearPeers(ticker: string): void {
+        this.peers.delete(this.normalizeTicker(ticker));
     }
 }
+
+export const peersStore = new PeersStore();

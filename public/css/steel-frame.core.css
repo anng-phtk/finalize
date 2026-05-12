@@ -9,37 +9,44 @@
  */
 :root {
     /* ========== GREYSCALE CORE ========== */
-    --sf-gray-0: #f8f9fa;      /* page background */
-    --sf-gray-1: #f1f3f5;      /* panel background */
-    --sf-gray-2: #e9ecef;      /* title background, subtle dividers */
-    --sf-gray-3: #dee2e6;      /* main border colour */
-    --sf-gray-4: #ced4da;      /* slightly stronger border (hover/focus) */
+    --sf-gray-0: #f8f9fa;
+    /* page background */
+    --sf-gray-1: #f1f3f5;
+    /* panel background */
+    --sf-gray-2: #e9ecef;
+    /* title background, subtle dividers */
+    --sf-gray-3: #dee2e6;
+    /* main border colour */
+    --sf-gray-4: #ced4da;
+    /* slightly stronger border (hover/focus) */
     --sf-gray-5: #c7c7c7;
-    --sf-gray-9: #212529;      /* primary text colour */
+    --sf-gray-9: #212529;
+    /* primary text colour */
     --sf-gray-10: slategray;
     /* ========== FONTS ========== */
     /* Sans‑serif: thin, clean, readable at small sizes */
     --sf-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     /* Monospace: for code / data – keeps its character even when font-size is reduced */
     --sf-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', monospace;
-    
+
     /* Use sans by default */
     --sf-font-family: var(--sf-font-sans);
-    
+
     /* Text colours */
     --sf-color: var(--sf-gray-9);
-    --sf-title-font-color: var(--sf-gray-9);   /* dark text on light title bg */
-    
+    --sf-title-font-color: var(--sf-gray-9);
+    /* dark text on light title bg */
+
     /* Backgrounds */
     --sf-title-bg: var(--sf-gray-5);
     --sf-panel-bg: var(--sf-gray-1);
     --sf-panel-title-bg: var(--sf-gray-4);
     --sf-title-bold: bold;
-    
+
     /* Borders */
     --sf-border: var(--sf-gray-3);
     --sf-pane-border: var(--sf-gray-3);
-    
+
     /* Panel shadow (subtle, never on titles) */
     --sf-panel-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05);
 }
@@ -75,18 +82,18 @@ body {
         "footer footer footer";
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(0, 1fr) auto;
-    gap: 2px;               
+    gap: 2px;
 }
 
 /* All direct children of .grid must clip and not overflow */
-.grid > * {
+.grid>* {
     min-width: 0;
     min-height: 0;
     overflow: hidden;
-    padding:2px;
+    padding: 2px;
 }
 
-.grid > div {
+.grid>div {
     border: 1px solid var(--sf-border);
 }
 
@@ -95,6 +102,7 @@ body {
     grid-area: header;
     min-height: 55px;
 }
+
 .layout-left {
     grid-area: left;
     width: 330px;
@@ -102,6 +110,7 @@ body {
     overflow: hidden;
     transition: all 0.3s ease-in-out;
 }
+
 .layout-right {
     grid-area: right;
     width: 330px;
@@ -110,6 +119,7 @@ body {
     transition: all 0.3s ease-in-out;
 
 }
+
 .layout-footer {
     grid-area: footer;
     height: 330px;
@@ -130,22 +140,26 @@ body {
     min-width: 0;
     min-height: 0;
 }
+
 .app-col {
     display: flex;
     flex-direction: column;
     min-width: 0;
     min-height: 0;
 }
+
 .flex-1 {
     flex: 1 1 0;
     min-width: 0;
     min-height: 0;
 }
+
 .flex-fill {
     flex: 1 1 auto;
     min-width: 0;
     min-height: 0;
 }
+
 .flex-grow {
     flex: 1 1 auto;
     min-width: 0;
@@ -157,21 +171,23 @@ body {
 .collapsed {
     width: 30px;
 }
+
 .collapsed-vertical {
     height: 30px;
 }
-.collapsed > :not(.collapse-handle),
-.collapsed-vertical > :not(.collapse-handle) {
+
+.collapsed> :not(.collapse-handle),
+.collapsed-vertical> :not(.collapse-handle) {
     display: none;
 }
 
 .expanded {
-    width: 400px;
+    width: 600px;
 }
 
 
 .expanded-vertical {
-    height: 400px;
+    height: 600px;
 }
 
 /**
@@ -189,9 +205,12 @@ body {
     grid-template-rows: auto minmax(0, 1fr) auto;
     min-width: 0;
     min-height: 0;
-    height: 100%;          /* fill parent container */
-    width: 100%;           /* fill parent container */
-    overflow: hidden;      /* enforce child scrolling */
+    height: 100%;
+    /* fill parent container */
+    width: 100%;
+    /* fill parent container */
+    overflow: hidden;
+    /* enforce child scrolling */
     padding: 2px;
     border: 1px solid #cecece;
 }
@@ -200,7 +219,8 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 4px;              /* minimal spacing, can be overridden */
+    gap: 4px;
+    /* minimal spacing, can be overridden */
     min-width: 0;
     overflow: hidden;
     background-color: var(--sf-panel-title-bg);
@@ -220,14 +240,15 @@ body {
     white-space: nowrap;
     order: 2;
     font-weight: var(--sf-title-bold);
-    height:25px;
+    height: 25px;
     justify-self: center;
     align-content: center;
 }
 
 .panel-ctrl {
     flex: 0 0 auto;
-    margin-left: auto;     /* push to right */
+    margin-left: auto;
+    /* push to right */
     order: 3;
     display: flex;
     gap: 4px;
@@ -236,7 +257,8 @@ body {
 .panel-content {
     min-width: 0;
     min-height: 0;
-    overflow: auto;        /* scroll when content overflows */
+    overflow: auto;
+    /* scroll when content overflows */
 }
 
 .panel-footer {
@@ -248,23 +270,28 @@ body {
     display: grid;
     grid-template-columns: 30px minmax(0, 1fr) auto;
     grid-template-areas: "ico txt ctrl";
-    overflow: hidden;      /* enforce child scrolling */
-    width: 100%;           /* fill parent container */
+    overflow: hidden;
+    /* enforce child scrolling */
+    width: 100%;
+    /* fill parent container */
     height: 35px;
 }
+
 .pane-title>* {
     font-family: var(--sf-font-family);
-    color:var(--sf-title-font-color);
+    color: var(--sf-title-font-color);
     font-weight: var(--sf-title-bold);
 }
+
 .title-icon {
     grid-area: ico;
-    min-width:20px;
+    min-width: 20px;
     align-content: center;
     align-self: center;
     justify-self: center;
     align-items: center;
 }
+
 .title-text {
     grid-area: txt;
     text-align: left;
@@ -274,14 +301,16 @@ body {
     align-items: center;
 
 }
+
 .title-ctrl {
     grid-area: ctrl;
     min-width: 30px;
     align-self: center;
     justify-self: center;
     align-items: center;
-    padding:4px;
+    padding: 4px;
 }
+
 /**
 .title-ctrl > button {
     background-color:transparent;
@@ -296,8 +325,10 @@ body {
 body {
     background-color: var(--sf-gray-0);
     font-family: var(--sf-font-family);
-    font-size: 0.8125rem;   /* 13px – small but readable */
-    font-weight: 400;        /* regular weight – 'thin' is too light for body text */
+    font-size: 0.8125rem;
+    /* 13px – small but readable */
+    font-weight: 400;
+    /* regular weight – 'thin' is too light for body text */
     line-height: 1.4;
     color: var(--sf-color);
 }
@@ -306,13 +337,14 @@ body {
 .panel {
     background: var(--sf-panel-bg);
     box-shadow: var(--sf-panel-shadow);
-    
+
 }
 
 /* Panel content area can have a slightly lighter or matching background */
 .panel-content {
     background: inherit;
-    padding: 8px;             /* comfortable breathing room */
+    padding: 8px;
+    /* comfortable breathing room */
 }
 
 /* Title bars – no shadow, only a subtle bottom border */
@@ -325,14 +357,15 @@ body {
 }
 
 /* Keep the grid item borders subtle (already using --sf-border) */
-.grid > div {
+.grid>div {
     border: 1px solid var(--sf-border);
-    background-color: var(--sf-gray-0);  /* match page background */
+    background-color: var(--sf-gray-0);
+    /* match page background */
 
 }
 
 /* All buttons inside .title-ctrl – minimal styling, no heavy borders */
-.title-ctrl > button {
+.title-ctrl>button {
     background-color: transparent;
     border: 1px solid var(--sf-gray-4);
     color: var(--sf-gray-9);
@@ -341,14 +374,19 @@ body {
     cursor: pointer;
     transition: all 0.1s ease;
 }
-.title-ctrl > button:hover {
+
+.title-ctrl>button:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Optional: monospace utility class – for data grids, logs, etc. */
-.mono, code, pre, .sf-monospace {
+.mono,
+code,
+pre,
+.sf-monospace {
     font-family: var(--sf-font-mono);
-    font-size: 0.75rem;   /* stays crisp even when small */
+    font-size: 0.75rem;
+    /* stays crisp even when small */
     background-color: var(--sf-gray-2);
     padding: 0.1rem 0.3rem;
     border-radius: 3px;

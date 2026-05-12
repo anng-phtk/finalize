@@ -1,12 +1,19 @@
-import { categoryRank, FundamentalsDataDefinition, type AdaptedFundamentalRow, type FundamentalsResponse } from "../contracts/AppContracts";
+import { categoryRank, FundamentalsDataDefinition, type AdaptedFundamentalRow, type AdaptedFundamentals, type FundamentalsResponse } from "../contracts/AppContracts";
 
 
 class FundamentalsAdapter {
     //private map
-    adaptData(rawData: FundamentalsResponse): AdaptedFundamentalRow[] {
+    adaptData(rawData: FundamentalsResponse): AdaptedFundamentals {
         const dataByCategory: AdaptedFundamentalRow[] = [];
+        const periods = (rawData["reportedPeriods"] as string[]) || [];
+        const formTypes = (rawData["FORM_TYPE"] as string[]) || [];
+        const filingUrls = (rawData["FILING_URL"] as string[]) || [];
 
         for (const [key, value] of Object.entries(rawData)) {
+            if (key === "reportedPeriods" || key === "FORM_TYPE" || key === "FILING_URL") {
+                continue;
+            }
+
             const definition = FundamentalsDataDefinition[key];
 
             const item: AdaptedFundamentalRow = {
@@ -26,9 +33,16 @@ class FundamentalsAdapter {
             (a, b) => categoryRank[a.category] - categoryRank[b.category]
         );
 
-        return dataByCategory;
+        return {
+            periods,
+            formTypes,
+            filingUrls,
+            rows: dataByCategory
+        };
     }
 }
+
+
 
 
 export const fundamentalsAdapter = new FundamentalsAdapter();

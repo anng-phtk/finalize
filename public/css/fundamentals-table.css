@@ -1,0 +1,115 @@
+.fundamentals-container {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.table-title {
+    background-color: var(--sf-gray-4);
+    border-bottom: 1px solid var(--sf-border);
+}
+
+.title-subtext {
+    font-size: 0.75rem;
+    color: var(--sf-gray-9);
+    margin-left: 10px;
+    align-self: center;
+    opacity: 0.8;
+}
+
+.table-wrapper {
+    flex: 1;
+    overflow: auto;
+    background-color: var(--sf-gray-0);
+}
+
+.steel-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: var(--sf-font-family);
+    font-size: 0.8rem;
+}
+
+.steel-table th {
+    background-color: var(--sf-gray-2);
+    padding: 8px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--sf-border);
+    border-right: 1px solid var(--sf-border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    white-space: nowrap;
+}
+
+.steel-table th.metric-col {
+    text-align: left;
+    left: 0;
+    z-index: 30;
+    background-color: var(--sf-gray-3);
+}
+
+.steel-table td {
+    padding: 6px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--sf-border);
+    border-right: 1px solid var(--sf-border);
+    white-space: nowrap;
+}
+
+.steel-table td.metric-label {
+    text-align: left;
+    font-weight: 500;
+    position: sticky;
+    left: 0;
+    background-color: var(--sf-gray-1);
+    z-index: 10;
+    border-right: 2px solid var(--sf-border);
+}
+
+.category-row {
+    background-color: var(--sf-gray-3);
+}
+
+.category-row td {
+    text-align: left !important;
+    font-weight: bold;
+    color: var(--sf-gray-9);
+    padding: 4px 12px;
+}
+
+.row-hidden {
+    display: none;
+}
+
+/* Zebra striping for better readability */
+.steel-table tr:nth-child(even):not(.category-row):not(#table-form-row) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.steel-table tr:hover:not(.category-row):not(#table-form-row) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.btn-filing-form {
+    background-color: var(--sf-gray-1);
+    border: 1px solid var(--sf-gray-4);
+    color: var(--sf-gray-9);
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-filing-form:hover {
+    background-color: var(--sf-gray-3);
+    border-color: var(--sf-gray-10);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.panel-content.panel-content--flush {
+    padding: 0 !important;
+}

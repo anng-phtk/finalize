@@ -1,5 +1,6 @@
 import type {
     AdaptedFundamentalRow,
+    AdaptedFundamentals,
     FundamentalsRequest
 } from "../contracts/AppContracts";
 
@@ -9,9 +10,10 @@ export type CachedFundamentals = {
     key: FundamentalsCacheKey;
     ticker: string;
     formType: FundamentalsRequest["formType"];
-    rows: AdaptedFundamentalRow[];
+    data: AdaptedFundamentals;
     loadedAt: number;
 };
+
 
 function makeKey(
     ticker: string,
@@ -42,7 +44,7 @@ class FundamentalsStore {
     set(
         ticker: string,
         formType: FundamentalsRequest["formType"],
-        rows: AdaptedFundamentalRow[]
+        data: AdaptedFundamentals
     ): CachedFundamentals {
         const key = makeKey(ticker, formType);
 
@@ -50,9 +52,10 @@ class FundamentalsStore {
             key,
             ticker: ticker.trim().toUpperCase(),
             formType,
-            rows,
+            data,
             loadedAt: Date.now()
         };
+
 
         if (this.cache.has(key)) {
             this.cache.delete(key);

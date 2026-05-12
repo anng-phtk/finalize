@@ -334,3 +334,11 @@ export type AdaptedFundamentalRow = {
     defaultVisible?: boolean;
     visual?: string;
 };
+
+export type AdaptedFundamentals = {
+    periods: string[];
+    formTypes: string[];
+    filingUrls: string[];
+    rows: AdaptedFundamentalRow[];
+}
+
