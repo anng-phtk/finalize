@@ -1,13 +1,15 @@
-<div class="fundamentals-container">
-    <div class="pane-title table-title">
-        <div class="title-icon">
-            <i class="bi bi-table"></i>
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-icon">
+            <i class="bi bi-eye"></i>
         </div>
-        <div id="table-ticker" class="title-text">Ticker</div>
-        <div id="table-reportType" class="title-subtext">Report Type</div>
+        <div class="panel-title">Fundamentals Table</div>
+        <div class="panel-ctrl">
+            <button class="btn-ctrl"><i class="bi bi-trash"></i></button>
+        </div>
     </div>
-    
-    <div class="table-wrapper">
+
+    <div class="panel-content panel-content--flush">
         <table id="fundamentals-table" class="steel-table">
             <thead>
                 <tr id="table-form-row">
@@ -25,4 +27,39 @@
             </tbody>
         </table>
     </div>
+    <div class="panel-footer">
+        <span id="table-ticker" class="title-text">Ticker</span>
+        <span id="table-reportType" class="title-subtext">Report Type</span>
+    </div>
 </div>
+
+<!--
+<div class="fundamentals-container panel">
+    <div class="pane-title table-title">
+        <div class="title-icon">
+            <i class="bi bi-table"></i>
+        </div>
+        <div id="table-ticker" class="title-text">Ticker</div>
+        <div id="table-reportType" class="title-subtext">Report Type</div>
+    </div>
+    
+    <div class="table-wrapper">
+        <table id="fundamentals-table" class="steel-table">
+            <thead>
+                <tr id="table-form-row">
+                    <th class="metric-col">Form</th>
+                    !-- Forms will be injected here --
+                </tr>
+                <tr id="table-header-row">
+                    <th class="metric-col">Metric</th>
+                    !-- Periods will be injected here --
+                </tr>
+            </thead>
+
+            <tbody id="table-body">
+                !-- Data rows will be injected here --
+            </tbody>
+        </table>
+    </div>
+</div>
+-->
