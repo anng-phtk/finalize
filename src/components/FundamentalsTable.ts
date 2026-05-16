@@ -1,4 +1,4 @@
-import { type AdaptedFundamentals, type AdaptedFundamentalRow } from "../contracts/AppContracts";
+import { type AdaptedFundamentals, type AdaptedFundamentalRow } from "../contracts/FundamentalsContracts";
 import { Component } from "../core/Component";
 import { eventBus } from "../core/EventBus";
 import { formatCell, humanizeMetric } from "../core/helper";
@@ -10,11 +10,31 @@ export class FundamentalsTable extends Component {
     }
 
     protected override bindEvents(): void {
-        // Handled by App.ts for view swapping
+        const handle = eventBus.on('Fundamentals:Ticker:DataReady', async (payload) => {
+            const cached = fundamentalsStore.get(payload.ticker, payload.formType);
+            if (cached) {
+                this.renderTable(payload.ticker, payload.formType, cached.data);
+            }
+        });
+        this.eventHandles.push(handle);
+
+        const chartHandle = eventBus.on('Fundamentals:Chart:DataChanged', (payload) => {
+            this.activeMetricKeys = payload.series.map(s => s.metricKey);
+            if (this.currentData) {
+                this.renderRows(this.currentData.rows);
+            }
+        });
+        this.eventHandles.push(chartHandle);
     }
+
+    private currentTicker: string = '';
+    private currentData: AdaptedFundamentals | null = null;
+    private activeMetricKeys: string[] = [];
 
     public renderTable(ticker: string, formType: string, data: AdaptedFundamentals): void {
         try {
+            this.currentTicker = ticker;
+            this.currentData = data;
             this.getElement('table-ticker').textContent = ticker;
             this.getElement('table-reportType').textContent = formType;
 
@@ -42,7 +62,8 @@ export class FundamentalsTable extends Component {
             const period = data.periods[index];
             const url = data.filingUrls[index];
 
-            button.onclick = () => {
+            button.onclick = (e) => {
+                e.stopPropagation();
                 eventBus.emit('Fundamentals:FilingForm:TextRequested', {
                     ticker,
                     period,
@@ -90,13 +111,37 @@ export class FundamentalsTable extends Component {
             }
 
             const tr = document.createElement('tr');
+            tr.className = 'metric-row-clickable';
             if (row.defaultVisible === false) {
                 tr.classList.add('row-hidden');
             }
 
+            tr.onclick = () => {
+                if (this.currentTicker && this.currentData) {
+                    eventBus.emit('Fundamentals:Chart:SeriesAdded', {
+                        ticker: this.currentTicker,
+                        metricKey: row.key,
+                        label: row.label,
+                        data: row.data as (number | null)[],
+                        periods: this.currentData.periods,
+                        unit: row.format === 'percent' ? '%' : (row.format === 'ratio' ? 'pure' : 'USD')
+                    });
+                }
+            };
+
+            const isActive = this.activeMetricKeys.includes(row.key);
+
             const labelCell = document.createElement('td');
             labelCell.className = 'metric-label';
-            labelCell.textContent = humanizeMetric(row.label);
+
+            const toggleIcon = document.createElement('i');
+            toggleIcon.className = `bi bi-bar-chart-line chart-toggle ${isActive ? 'is-active' : ''}`;
+            labelCell.appendChild(toggleIcon);
+
+            const labelSpan = document.createElement('span');
+            labelSpan.textContent = humanizeMetric(row.label);
+            labelCell.appendChild(labelSpan);
+
             tr.appendChild(labelCell);
 
             row.data.forEach(val => {

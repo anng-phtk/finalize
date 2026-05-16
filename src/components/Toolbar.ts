@@ -1,4 +1,4 @@
-import type { ToolbarFetchRequest } from "../contracts/AppContracts";
+import type { ToolbarFetchRequest } from "../contracts/FundamentalsContracts";
 import { Component } from "../core/Component";
 import { eventBus } from "../core/EventBus";
 
@@ -53,6 +53,10 @@ export class Toolbar extends Component {
             this.setDefaults(payload.ticker, payload.formType, payload.refresh, payload.peers);
             // emit the event to load defaults
             eventBus.emit("Toolbar:Fetch:Clicked", payload);
+        });
+
+        this.getElement('btn-clear').addEventListener('click', () => {
+            eventBus.emit("Toolbar:Clear:Clicked", {});
         });
     }
 

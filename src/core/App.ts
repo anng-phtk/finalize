@@ -1,48 +1,29 @@
+import { initializeLayout, initializeComponents, peerComparison, fundamentalsTable, setPaneState, setElementVisibility, toggleChartArea } from "./AppUI";
+
 import { fundamentalsAdapter } from "../adapters/FundamentalsAdapter";
-import { FundamentalsTable } from "../components/FundamentalsTable";
-import { PeerComparison } from "../components/PeerComparison";
-import { Toolbar } from "../components/Toolbar";
-import { WatchListTable } from "../components/WatchListTable";
-import type { AdaptedFundamentals, ReportTypes, ToolbarFetchRequest } from "../contracts/AppContracts";
+import type { AdaptedFundamentals, ReportTypes, ToolbarFetchRequest } from "../contracts/FundamentalsContracts";
 import type { WatchlistTickerSelected } from "../contracts/WatchlistContracts";
 import { fundamentalsStore } from "../store/FundamentalsStore";
+import { filingsStore } from "../store/FilingsStore";
 import { peersStore } from "../store/TickerPeersStore";
 import { tickerResearchStore } from "../store/TickerResearchStore";
 import { API } from "./Api";
 import { eventBus } from "./EventBus";
-
+import { fundamentalChartStore } from "../store/FundamentalChartStore";
+import { peerChartStore } from "../store/PeerChartStore";
+//-------------------------
+// ALL DOM EVENT LISTENERS
+//-------------------------
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('App Started');
-    initializeLayout();
+    initializeLayout({
+        leftPaneState: 'collapsed',
+        rightPaneState: 'collapsed',
+        footerState: 'collapsed'
+    });
     await initializeComponents();
 });
 
-let fundamentalsTable: FundamentalsTable;
-let peerComparison: PeerComparison;
-
-
-eventBus.on('Toolbar:Fetch:Clicked', async (payload: ToolbarFetchRequest) => {
-    // 1. Ensure data for main ticker
-    await ensureFundamentalsData(payload.ticker, payload.formType, payload.refresh, true);
-
-    // 2. Ensure data for peers
-    if (payload.peers && payload.peers.length > 0) {
-        peersStore.setPeers(payload.ticker, payload.peers);
-
-        await Promise.allSettled(
-            payload.peers.map(peer => ensureFundamentalsData(peer, payload.formType, payload.refresh))
-        );
-    }
-
-    // 3. Get Watchlist data
-    await ensureResearchData(payload.ticker, payload.refresh, true);
-
-    if (payload.peers && payload.peers.length > 0) {
-        await Promise.allSettled(
-            payload.peers.map(peer => ensureResearchData(peer, payload.refresh))
-        );
-    }
-});
 
 
 const ensureResearchData = async (ticker: string, refresh: boolean, emitEventForPrimary: boolean = false) => {
@@ -83,16 +64,70 @@ const ensureFundamentalsData = async (ticker: string, formType: ReportTypes["for
 
     // 3. Emit data-ready event
     if (emitEventForPrimary) eventBus.emit('Fundamentals:Ticker:DataReady', { ticker, formType });
-    else eventBus.emit('Fundamentals:Peer:DataReady', { ticker, formType });
+    else eventBus.emit('Fundamentals:Peer:DataReady', { ticker, peers: peersStore.getPeers(ticker) });
 };
 
+const ensureFilingsData = async (ticker: string, refresh: boolean) => {
+    let hasData = filingsStore.get(ticker) !== undefined;
+    if (hasData && !refresh) {
+        eventBus.emit('Filings:History:DataReady', { ticker });
+        return;
+    }
 
+    try {
+        console.log(`Fetching filings history for ${ticker}...`);
+        const data = await API.fetchFilingHistory(ticker, refresh);
+        filingsStore.set(ticker, data);
+        eventBus.emit('Filings:History:DataReady', { ticker });
+    } catch (error) {
+        console.error(`Failed to fetch filings for ${ticker}:`, error);
+        eventBus.emit('Filings:History:DataError', { ticker, cause: error });
+    }
+};
+
+//-------------------------
+// ALL EVENT BUS LISTENERS
+//-------------------------
+
+eventBus.on('Toolbar:Fetch:Clicked', async (payload: ToolbarFetchRequest) => {
+    // 1. Reset state for new fetch
+    fundamentalChartStore.clear();
+    peerChartStore.clear();
+
+    // 2. Ensure table is mounted
+    await fundamentalsTable?.mount();
+
+    // 2. Ensure data for main ticker
+    await ensureFundamentalsData(payload.ticker, payload.formType, payload.refresh, true);
+
+    // 3. Ensure data for peers
+    if (payload.peers && payload.peers.length > 0) {
+        peersStore.setPeers(payload.ticker, payload.peers);
+
+        await Promise.allSettled(
+            payload.peers.map(peer => ensureFundamentalsData(peer, payload.formType, payload.refresh))
+        );
+    }
+
+    // 3. Get Watchlist data
+    await ensureResearchData(payload.ticker, payload.refresh, true);
+
+    if (payload.peers && payload.peers.length > 0) {
+        await Promise.allSettled(
+            payload.peers.map(peer => ensureResearchData(peer, payload.refresh))
+        );
+    }
+
+    // 4. Get Filings Data
+    await ensureFilingsData(payload.ticker, payload.refresh);
+});
 eventBus.on('Fundamentals:FilingForm:TextRequested', async (payload) => {
     console.log('Filing text requested, calling API...', payload);
     const text = await API.fetchFilingText(payload.ticker, payload.period, payload.url);
     console.log('Received filing text:', text);
     // Future: emit an event to show this text in a viewer component
 });
+
 eventBus.on("WatchList:Ticker:Selected", (payload: WatchlistTickerSelected) => {
     const peers = peersStore.getPeers(payload.ticker);
     eventBus.emit("Toolbar:Defaults:Requested", {
@@ -102,104 +137,126 @@ eventBus.on("WatchList:Ticker:Selected", (payload: WatchlistTickerSelected) => {
 });
 
 
+eventBus.on('Toolbar:Comparison:Requested', async (payload: { ticker: string, peers: string[] }) => {
+    console.log('Toolbar:Comparison:Requested - Ensuring ANNUAL data for group', payload);
+
+    const allTickers = [payload.ticker, ...payload.peers];
+
+    // 1. Fetch missing ANNUAL data for all tickers in the group
+    await Promise.allSettled(
+        allTickers.map(t => ensureFundamentalsData(t, 'ANNUAL', false))
+    );
+
+    // 2. Mount and Emit
+    await peerComparison?.mount();
+
+    eventBus.emit('Fundamentals:Peer:DataReady', {
+        peers: payload.peers,
+        ticker: payload.ticker
+    });
+});
+
+eventBus.on('Fundamentals:Chart:SeriesAdded', (payload) => {
+    fundamentalChartStore.addSeries({
+        ticker: payload.ticker,
+        metricKey: payload.metricKey,
+        label: payload.label,
+        data: payload.data,
+        unit: payload.unit
+    }, payload.periods);
+});
+
+eventBus.on('Peer:Chart:SeriesAdded', (payload) => {
+    peerChartStore.addMetric({
+        metricKey: payload.metricKey,
+        label: payload.label,
+        unit: payload.unit
+    }, payload.peers);
+});
+
+eventBus.on('Toolbar:Clear:Clicked', () => {
+    console.log('Toolbar:Clear:Clicked - Clearing all stores');
+    fundamentalChartStore.clear();
+    peerChartStore.clear();
+});
 
 
-async function initializeComponents() {
-    console.log(`called`);
-    try {
-        let toolbar = new Toolbar('toolbar-container', '/components/toolbar/toolbar.html');
-        await toolbar.mount();
+let rightPaneCollapseTimeout: any = null;
+let leftPaneCollapseTimeout: any = null;
 
-        fundamentalsTable = new FundamentalsTable('main-content', '/components/fundamentals-viewer/fundamentals-table.html');
-        await fundamentalsTable.mount();
-
-        peerComparison = new PeerComparison('main-content', '/components/peer-comparison/peer-comparison.html');
-        // It will mount on demand via events
-
-        let watchlist = new WatchListTable('watchlist-container', '/components/watchlist-viewer/watchlist-table.html');
-        await watchlist.mount();
-    } catch (err) {
-        console.log(err)
+const checkLeftPaneAutoState = () => {
+    // Left pane has data if either fundamentals OR filings exist
+    if (fundamentalsStore.hasData() || filingsStore.hasData()) {
+        setPaneState('main-left', 'default');
+    } else {
+        if (!leftPaneCollapseTimeout) {
+            leftPaneCollapseTimeout = setTimeout(() => {
+                setPaneState('main-left', 'collapsed');
+            }, 500);
+        }
     }
 }
 
-// Handle view swapping
-eventBus.on('Fundamentals:Ticker:DataReady', async (payload) => {
-    await fundamentalsTable.mount();
-    const cached = fundamentalsStore.get(payload.ticker, payload.formType);
-    if (cached) {
-        fundamentalsTable.renderTable(payload.ticker, payload.formType, cached.data);
+eventBus.on('WatchList:Ticker:DataReady', () => {
+    checkLeftPaneAutoState();
+});
+
+eventBus.on('Fundamentals:Ticker:DataReady', () => {
+    checkLeftPaneAutoState();
+});
+
+eventBus.on('Filings:History:DataReady', () => {
+    checkLeftPaneAutoState();
+});
+
+eventBus.on('Fundamentals:Peer:DataReady', () => {
+    checkLeftPaneAutoState();
+});
+eventBus.on('Fundamentals:Chart:SeriesAdded', () => {
+    setPaneState('main-left', 'collapsed');
+});
+eventBus.on('Peer:Chart:SeriesAdded', () => {
+    setPaneState('main-left', 'collapsed');
+});
+
+eventBus.on('Peer:Chart:Collapse', () => {
+    toggleChartArea('right-applet-primary');
+})
+
+const checkRightPaneAutoState = () => {
+    const isPrimaryVisible = !document.getElementById('right-applet-primary')?.classList.contains('invisible');
+    const isSecondaryVisible = !document.getElementById('right-applet-secondary')?.classList.contains('invisible');
+
+    if (!isPrimaryVisible && !isSecondaryVisible) {
+        // Both charts empty -> start collapse timer
+        if (!rightPaneCollapseTimeout) {
+            rightPaneCollapseTimeout = setTimeout(() => {
+                setPaneState('main-right', 'collapsed');
+            }, 500);
+        }
+    } else {
+        // At least one chart has data -> cancel timer and expand
+        if (rightPaneCollapseTimeout) {
+            clearTimeout(rightPaneCollapseTimeout);
+            rightPaneCollapseTimeout = null;
+        }
+
+        // Only expand if currently collapsed
+        const rightPane = document.getElementById('main-right');
+        if (rightPane?.classList.contains('collapsed')) {
+            setPaneState('main-right', 'expanded');
+        }
     }
+};
+
+eventBus.on('Fundamentals:Chart:DataChanged', (payload) => {
+    const hasData = payload.series.length > 0;
+    setElementVisibility('right-applet-primary', hasData);
+    checkRightPaneAutoState();
 });
 
-eventBus.on('Toolbar:Comparison:Requested', async (payload) => {
-    await peerComparison.mount();
-    peerComparison.loadAndRender(payload.ticker, payload.peers);
+eventBus.on('Peer:Chart:DataChanged', (payload) => {
+    const hasData = payload.metrics.length > 0;
+    setElementVisibility('right-applet-secondary', hasData);
+    checkRightPaneAutoState();
 });
-
-
-function initializeLayout() {
-    const leftPane = document.getElementById('main-left') || null;
-    const collapseLeftBtn = document.getElementById('btn-collapse-left');
-    const expandLeftBtn = document.getElementById('btn-expand-left')
-    leftPane?.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (leftPane?.classList.contains('collapsed')) leftPane?.classList.toggle('collapsed');
-
-    });
-
-    collapseLeftBtn?.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (leftPane?.classList.contains('expanded')) leftPane?.classList.remove('expanded')
-        if (!leftPane?.classList.contains('collapsed')) leftPane?.classList.add('collapsed');
-    });
-
-    expandLeftBtn?.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        leftPane?.classList.toggle('expanded');
-    })
-
-
-    const rightPane = document.getElementById('main-right') || null;
-    const collapseRightBtn = document.getElementById('btn-collapse-right');
-    const expandRightBtn = document.getElementById('btn-expand-right');
-
-    rightPane?.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (rightPane?.classList.contains('collapsed')) rightPane?.classList.toggle('collapsed');
-
-    });
-
-    collapseRightBtn?.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (rightPane?.classList.contains('expanded')) rightPane?.classList.remove('expanded')
-        if (!rightPane?.classList.contains('collapsed')) rightPane?.classList.add('collapsed');
-    });
-
-    expandRightBtn?.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        rightPane?.classList.toggle('expanded');
-    });
-
-
-    const footerPane = document.getElementById('main-footer') || null;
-
-    footerPane?.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (footerPane?.classList.contains('collapsed-vertical')) footerPane?.classList.toggle('collapsed-vertical');
-
-    });
-
-    document.getElementById('btn-collapse-footer')?.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (!footerPane?.classList.contains('collapsed-vertical')) footerPane?.classList.add('collapsed-vertical');
-    });
-}

@@ -9,22 +9,27 @@ export class WatchListTable extends Component {
         super(rootId, templatePath);
     }
 
-    protected bindEvents(): void {
+    protected override bindEvents(): void {
         const updateTable = () => {
             this.renderAll();
         };
 
-        eventBus.on('WatchList:Ticker:DataReady', updateTable);
-        eventBus.on('WatchList:Peers:DataReady', updateTable);
+        this.eventHandles.push(eventBus.on('WatchList:Ticker:DataReady', updateTable));
+        this.eventHandles.push(eventBus.on('WatchList:Peers:DataReady', updateTable));
 
         this.getElement('watchlist-table-body').addEventListener('click', (evt: Event) => {
             evt.preventDefault();
             evt.stopPropagation();
-            if ((evt.target as HTMLTableCellElement).closest('td')?.dataset.ticker) {
-                let selectedTicker: string = (evt.target as HTMLTableCellElement).closest('td')?.dataset.ticker as string;
+            const td = (evt.target as HTMLElement).closest('td');
+            if (td?.dataset.ticker) {
+                let selectedTicker: string = td.dataset.ticker;
                 eventBus.emit("WatchList:Ticker:Selected", { ticker: selectedTicker, formType: 'ANNUAL', refresh: false });
             }
         });
+    }
+
+    protected override onMount(): void {
+        this.renderAll();
     }
 
     private renderAll() {

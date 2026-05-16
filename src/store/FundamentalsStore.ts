@@ -2,9 +2,9 @@ import type {
     AdaptedFundamentalRow,
     AdaptedFundamentals,
     FundamentalsRequest
-} from "../contracts/AppContracts";
+} from "../contracts/FundamentalsContracts";
 
-export type FundamentalsCacheKey =`${string}:${FundamentalsRequest["formType"]}`;
+export type FundamentalsCacheKey = `${string}:${FundamentalsRequest["formType"]}`;
 
 export type CachedFundamentals = {
     key: FundamentalsCacheKey;
@@ -76,6 +76,10 @@ class FundamentalsStore {
 
     clear(): void {
         this.cache.clear();
+    }
+
+    hasData() {
+        return this.cache.size > 0;
     }
 
     private evictOldest(): void {

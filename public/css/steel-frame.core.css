@@ -182,12 +182,12 @@ body {
 }
 
 .expanded {
-    width: 600px;
+    width: 40vw;
 }
 
 
 .expanded-vertical {
-    height: 600px;
+    height: 80vh;
 }
 
 /**

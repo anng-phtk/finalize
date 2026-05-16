@@ -1,0 +1,23 @@
+<div class="panel flex-grow">
+    <div class="panel-header">
+        <div class="panel-icon"><i class="bi bi-people"></i></div>
+        <div id="peer-chart-title" class="panel-title">Peer Comparison</div>
+        <div class="panel-ctrl">
+            <button id="btn-chart-collapse">
+                <i class="bi bi-textarea-resize"></i>
+            </button>
+        </div>
+    </div>
+    <div class="panel-content" style="padding: 10px; display: flex; flex-direction: column;">
+        <div style="flex-grow: 1; position: relative; min-height: 250px;">
+            <canvas id="peer-chart-canvas"></canvas>
+        </div>
+        <div id="peer-chart-legend" class="chart-legend-custom"
+            style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.75rem;">
+            <!-- Legend items -->
+        </div>
+    </div>
+    <div class="panel-footer">
+        <span id="peer-chart-status">Select metrics from the peer table to compare</span>
+    </div>
+</div>

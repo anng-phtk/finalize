@@ -113,3 +113,23 @@
 .panel-content.panel-content--flush {
     padding: 0 !important;
 }
+.metric-row-clickable:hover {
+    background-color: var(--sf-gray-2);
+    cursor: pointer;
+}
+
+.chart-toggle {
+    margin-right: 8px;
+    color: var(--sf-gray-6);
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 0.9rem;
+}
+
+.chart-toggle:hover {
+    color: var(--sf-blue-5) !important;
+}
+
+.chart-toggle.is-active {
+    color: var(--sf-blue-5);
+}

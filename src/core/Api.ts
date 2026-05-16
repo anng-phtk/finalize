@@ -1,4 +1,5 @@
-import type { FundamentalsRequest, FundamentalsResponse } from "../contracts/AppContracts";
+import type { FilingHistoryResponse } from "../contracts/FilingsContracts";
+import type { FundamentalsRequest, FundamentalsResponse } from "../contracts/FundamentalsContracts";
 import type { ResearchDataResponse } from "../contracts/WatchlistContracts";
 
 export class Api {
@@ -22,6 +23,15 @@ export class Api {
         // const res = await fetch(`${this.BASE_URL}/api/filing-text?url=${encodeURIComponent(url)}`);
         // return await res.text();
         return `Mock filing text for ${ticker} (${period})`;
+    }
+
+    async fetchFilingHistory(ticker: string, refresh: boolean = false): Promise<FilingHistoryResponse> {
+        const url = `${this.BASE_URL}/api/filings/${ticker}?refresh=${String(refresh)}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+            throw new Error(`${res.status}: ${res.statusText}: Server returned an error for ${ticker}.`);
+        }
+        return await res.json() as FilingHistoryResponse;
     }
 
     async fetchResearchData(ticker: string, refresh: boolean = false): Promise<ResearchDataResponse> {

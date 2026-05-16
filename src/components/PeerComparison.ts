@@ -1,4 +1,4 @@
-import { type AdaptedFundamentals } from "../contracts/AppContracts";
+import { type AdaptedFundamentals } from "../contracts/FundamentalsContracts";
 import { Component } from "../core/Component";
 import { eventBus } from "../core/EventBus";
 import { formatCell, humanizeMetric } from "../core/helper";
@@ -10,8 +10,25 @@ export class PeerComparison extends Component {
     }
 
     protected override bindEvents(): void {
-        // Handled by App.ts for view swapping
+        const handle = eventBus.on('Fundamentals:Peer:DataReady', async (payload: { ticker: string, formType: string, peers: string[] | null }) => {
+            this.currentPeers = [payload.ticker, ...(payload.peers || [])];
+            this.loadAndRender(payload.ticker, payload.peers || []);
+        });
+        this.eventHandles.push(handle);
+
+        const chartHandle = eventBus.on('Peer:Chart:DataChanged', (payload) => {
+            this.activeMetricKeys = payload.metrics.map(m => m.metricKey);
+            if (this.lastDataMap) {
+                this.renderBody(this.lastTickers, this.lastDataMap);
+            }
+        });
+        this.eventHandles.push(chartHandle);
     }
+
+    private currentPeers: string[] = [];
+    private lastTickers: string[] = [];
+    private lastDataMap: Map<string, AdaptedFundamentals> | null = null;
+    private activeMetricKeys: string[] = [];
 
     public loadAndRender(primary: string, peers: string[]) {
         const tickers = [primary, ...peers];
@@ -35,7 +52,8 @@ export class PeerComparison extends Component {
 
     private renderTable(tickers: string[], dataMap: Map<string, AdaptedFundamentals>) {
         const activeTickers = tickers.filter(t => dataMap.has(t));
-        
+        this.lastTickers = activeTickers;
+        this.lastDataMap = dataMap;
         this.renderTickerRow(activeTickers);
         this.renderFormRow(activeTickers, dataMap);
         this.renderHeaderRow(activeTickers, dataMap);
@@ -65,7 +83,7 @@ export class PeerComparison extends Component {
             const button = document.createElement('button');
             button.className = 'btn-filing-form';
             button.textContent = data.formTypes[0] || '10-K'; // Latest
-            
+
             button.onclick = () => {
                 eventBus.emit('Fundamentals:FilingForm:TextRequested', {
                     ticker,
@@ -120,9 +138,29 @@ export class PeerComparison extends Component {
                 tr.classList.add('row-hidden');
             }
 
+            const isActive = this.activeMetricKeys.includes(pRow.key);
+
             const labelCell = document.createElement('td');
             labelCell.className = 'metric-label';
-            labelCell.textContent = humanizeMetric(pRow.label);
+            labelCell.classList.add('metric-row-clickable');
+
+            const toggleIcon = document.createElement('i');
+            toggleIcon.className = `bi bi-bar-chart-line chart-toggle ${isActive ? 'is-active' : ''}`;
+            labelCell.appendChild(toggleIcon);
+
+            const labelSpan = document.createElement('span');
+            labelSpan.textContent = humanizeMetric(pRow.label);
+            labelCell.appendChild(labelSpan);
+
+            labelCell.onclick = () => {
+                eventBus.emit('Peer:Chart:SeriesAdded', {
+                    metricKey: pRow.key,
+                    label: pRow.label,
+                    unit: pRow.format === 'percent' ? '%' : (pRow.format === 'ratio' ? 'pure' : 'USD'),
+                    peers: tickers
+                });
+            };
+
             tr.appendChild(labelCell);
 
             // Add data for each ticker

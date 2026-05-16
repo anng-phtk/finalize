@@ -1,4 +1,4 @@
-import { categoryRank, FundamentalsDataDefinition, type AdaptedFundamentalRow, type AdaptedFundamentals, type FundamentalsResponse } from "../contracts/AppContracts";
+import { categoryRank, FundamentalsDataDefinition, type AdaptedFundamentalRow, type AdaptedFundamentals, type FundamentalsResponse } from "../contracts/FundamentalsContracts";
 
 
 class FundamentalsAdapter {

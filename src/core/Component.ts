@@ -12,12 +12,41 @@ export abstract class Component {
         this.container = container;
     }
 
+    protected eventHandles: (() => void)[] = [];
+
+    private static activeComponents = new Map<HTMLElement, Component>();
+
     public async mount(): Promise<void> {
+        // Generic Swap: Unmount whatever was previously in this container
+        const current = Component.activeComponents.get(this.container);
+        if (current && current !== this) {
+            current.unmount();
+        }
+        
+        // Register this instance as active
+        Component.activeComponents.set(this.container, this);
+
         const html = await this.loadTemplate(this.templatePath);
         this.setHtml(html);
         this.cacheElements();
         this.bindEvents();
         this.afterRender();
+
+        this.onMount();
+    }
+
+    public unmount(): void {
+        this.onUnmount();
+        
+        // If we are the active occupant, remove ourselves from the registry
+        if (Component.activeComponents.get(this.container) === this) {
+            Component.activeComponents.delete(this.container);
+        }
+
+        this.eventHandles.forEach(h => h());
+        this.eventHandles = [];
+        this.container.innerHTML = '';
+        this.elements.clear();
     }
 
     protected async loadTemplate(templatePath: string): Promise<string> {
@@ -60,6 +89,12 @@ export abstract class Component {
     protected afterRender(): void {
         // optional override
     }
+
+
+    protected async beforeMount(): Promise<void> { /* hook */ }
+    protected async afterMount(): Promise<void> { /* hook */ }
+    protected onUnmount(): void { /* hook */ }
+    protected onMount(): void { /* hook */ }
 
     protected abstract bindEvents(): void;
 
