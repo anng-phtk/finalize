@@ -1,6 +1,6 @@
 import { Component } from "../core/Component";
 import { eventBus } from "../core/EventBus";
-import type { ChartSeries } from "../events/AppEvents";
+import type { ChartSeries } from "../contracts/FundamentalsContracts";
 import { formatNumber } from "../core/helper";
 
 export class FundamentalChart extends Component {

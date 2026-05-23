@@ -1,5 +1,4 @@
 import type {
-    AdaptedFundamentalRow,
     AdaptedFundamentals,
     FundamentalsRequest
 } from "../contracts/FundamentalsContracts";

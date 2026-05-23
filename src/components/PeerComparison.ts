@@ -4,14 +4,15 @@ import { eventBus } from "../core/EventBus";
 import { formatCell, humanizeMetric } from "../core/helper";
 import { fundamentalsStore } from "../store/FundamentalsStore";
 
+declare const XLSX: any;
+
 export class PeerComparison extends Component {
     constructor(container: string, path: string) {
         super(container, path);
     }
 
     protected override bindEvents(): void {
-        const handle = eventBus.on('Fundamentals:Peer:DataReady', async (payload: { ticker: string, formType: string, peers: string[] | null }) => {
-            this.currentPeers = [payload.ticker, ...(payload.peers || [])];
+        const handle = eventBus.on('Fundamentals:Peer:DataReady', async (payload: { ticker: string, peers: string[] | null }) => {
             this.loadAndRender(payload.ticker, payload.peers || []);
         });
         this.eventHandles.push(handle);
@@ -23,9 +24,17 @@ export class PeerComparison extends Component {
             }
         });
         this.eventHandles.push(chartHandle);
+
+        const btnTsv = this.getElement('btn-export-tsv');
+        if (btnTsv) btnTsv.onclick = () => this.exportData('clipboard');
+        
+        const btnCsv = this.getElement('btn-export-csv');
+        if (btnCsv) btnCsv.onclick = () => this.exportData('csv');
+        
+        const btnXlsx = this.getElement('btn-export-xlsx');
+        if (btnXlsx) btnXlsx.onclick = () => this.exportData('xlsx');
     }
 
-    private currentPeers: string[] = [];
     private lastTickers: string[] = [];
     private lastDataMap: Map<string, AdaptedFundamentals> | null = null;
     private activeMetricKeys: string[] = [];
@@ -58,6 +67,92 @@ export class PeerComparison extends Component {
         this.renderFormRow(activeTickers, dataMap);
         this.renderHeaderRow(activeTickers, dataMap);
         this.renderBody(activeTickers, dataMap);
+    }
+
+    private exportData(format: 'clipboard' | 'csv' | 'xlsx'): void {
+        if (!this.lastDataMap || this.lastTickers.length === 0) return;
+
+        const aoa: any[][] = [];
+        
+        const tickerRow: string[] = [''];
+        const periodRow: string[] = ['Metric'];
+
+        this.lastTickers.forEach(ticker => {
+            const data = this.lastDataMap!.get(ticker)!;
+            const periods = data.periods;
+            
+            tickerRow.push(ticker);
+            for (let i = 1; i < periods.length; i++) {
+                tickerRow.push('');
+            }
+            
+            periodRow.push(...periods);
+        });
+
+        aoa.push(tickerRow);
+        aoa.push(periodRow);
+
+        const primaryData = this.lastDataMap.get(this.lastTickers[0]);
+        if (!primaryData) return;
+
+        primaryData.rows.forEach(pRow => {
+            if (pRow.defaultVisible === false) return; 
+            
+            const dataRow: any[] = [humanizeMetric(pRow.label)];
+            
+            this.lastTickers.forEach(ticker => {
+                const data = this.lastDataMap!.get(ticker)!;
+                const tickerRow = data.rows.find(r => r.key === pRow.key);
+                
+                if (tickerRow) {
+                    const exportData = tickerRow.data.map(val => val == null ? 'null' : val);
+                    dataRow.push(...exportData);
+                } else {
+                    for (let i = 0; i < data.periods.length; i++) {
+                        dataRow.push('null');
+                    }
+                }
+            });
+            
+            aoa.push(dataRow);
+        });
+
+        if (typeof XLSX === 'undefined') {
+            console.error('SheetJS (XLSX) is not loaded.');
+            return;
+        }
+
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+        for (const key in ws) {
+            if (!ws[key] || ws[key].t !== 'n') continue;
+            const val = ws[key].v;
+            if (Math.abs(val) >= 1000000 && Number.isInteger(val)) {
+                ws[key].z = '#,##0';
+            } else if (!Number.isInteger(val)) {
+                ws[key].z = '0.00';
+            }
+        }
+
+        if (format === 'clipboard') {
+            const csv = XLSX.utils.sheet_to_csv(ws, { FS: ',', display: true });
+            navigator.clipboard.writeText(csv).then(() => {
+                console.log('CSV copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        } else if (format === 'csv') {
+            const csv = XLSX.utils.sheet_to_csv(ws, { FS: ',', display: true });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `peer_comparison.csv`;
+            link.click();
+        } else if (format === 'xlsx') {
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Peer Comparison");
+            XLSX.writeFile(wb, `peer_comparison.xlsx`);
+        }
     }
 
     private renderTickerRow(tickers: string[]) {

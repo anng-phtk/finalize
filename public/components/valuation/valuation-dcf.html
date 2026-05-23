@@ -1,0 +1,298 @@
+
+
+<div class="panel-content app-row panel-content--flush">
+
+    <!-- COLUMN 1: Inputs, Base FCF & Growth -->
+    <div class="panel flex-grow app-col">
+        <div class="panel-header">
+            <div class="panel-title">Inputs & Growth</div>
+        </div>
+        <div class="panel-content panel-content--flush">
+            <div class="h6">STEP 0 & 1 — Inputs & Base FCF</div>
+            <table class="steel-table">
+                <thead>
+                    <tr>
+                        <td><b>Metric</b></td>
+                        <td><b>Value ($B / %)</b></td>
+                        <td><b>Reasoning / Notes</b></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-start">
+                            Base FCF (Yr 0)
+                            <br><small class="text-muted text-sm">3-yr Avg Calculation</small>
+                        </td>
+                        <td><input type="number" id="inp-fcf" class="form-control form-control-sm border-secondary text-center" step="0.1"></td>
+                        <td><input type="text" id="note-fcf" class="form-control form-control-sm border-secondary" placeholder="e.g. 3-yr average to smooth cyclicality"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-start">Shares Outstanding</td>
+                        <td><input type="number" id="inp-shares" class="form-control form-control-sm border-secondary text-center" step="0.01"></td>
+                        <td><input type="text" id="note-shares" class="form-control form-control-sm border-secondary" placeholder="From income statement"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-start">Net Debt (Debt - Cash)</td>
+                        <td><input type="number" id="inp-netdebt" class="form-control form-control-sm border-secondary text-center" step="0.1"></td>
+                        <td><input type="text" id="note-netdebt" class="form-control form-control-sm border-secondary" placeholder="Adjust for leases if needed"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="h6 mt-3">STEP 2, 3 & 4 — Growth Projections (Years 1-10)</div>
+            <div class="app-row">
+                <div class="app-col flex-grow">
+                    <label class="form-label d-flex justify-content-between">
+                        <span>Y1-Y5 Growth (%)</span>
+                        <span id="val-g1" class="badge">10%</span>
+                    </label>
+                    <input type="range" class="form-range" id="inp-g1" min="0" max="100" step="1" value="10" list="g1-ticks">
+                    <datalist id="g1-ticks">
+                        <option value="5"></option>
+                        <option value="10"></option>
+                        <option value="15"></option>
+                        <option value="20"></option>
+                        <option value="30"></option>
+                        <option value="40"></option>
+                        <option value="50"></option>
+                        <option value="80"></option>
+                        <option value="100"></option>
+                    </datalist>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>0%</span>
+                        <span>50%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+                <div class="app-col flex-grow">
+                    <label class="form-label d-flex justify-content-between">
+                        <span>Y6-Y10 Decay Target (%)</span>
+                        <span id="val-g2" class="badge">4%</span>
+                    </label>
+                    <input type="range" class="form-range" id="inp-g2" min="0" max="20" step="0.5" value="4">
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>0%</span>
+                        <span>10%</span>
+                        <span>20%</span>
+                    </div>
+                </div>
+            </div>
+
+            <table class="steel-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th>5</th>
+                        <th>6</th>
+                        <th>7</th>
+                        <th>8</th>
+                        <th>9</th>
+                        <th>10</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-muted">
+                        <td class="text-start">Growth %</td>
+                        <td id="g-1"></td>
+                        <td id="g-2"></td>
+                        <td id="g-3"></td>
+                        <td id="g-4"></td>
+                        <td id="g-5"></td>
+                        <td id="g-6"></td>
+                        <td id="g-7"></td>
+                        <td id="g-8"></td>
+                        <td id="g-9"></td>
+                        <td id="g-10"></td>
+                    </tr>
+                    <tr class="fw-bold text-info">
+                        <td class="text-start text-nowrap">Proj. FCF ($B)</td>
+                        <td id="cf-1"></td>
+                        <td id="cf-2"></td>
+                        <td id="cf-3"></td>
+                        <td id="cf-4"></td>
+                        <td id="cf-5"></td>
+                        <td id="cf-6"></td>
+                        <td id="cf-7"></td>
+                        <td id="cf-8"></td>
+                        <td id="cf-9"></td>
+                        <td id="cf-10"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- COLUMN 2: Discount Rate & PV -->
+    <div class="panel flex-grow app-col">
+        <div class="panel-header">
+            <div class="panel-title">Discount Rate (WACC) & PV</div>
+        </div>
+        <div class="panel-content">
+            <div class="h6">STEP 5 & 6 — Discount Rate (WACC) & Present Value</div>
+            <div class="app-row mb-4" style="gap: 1rem;">
+                <div class="app-col flex-grow">
+                    <label class="form-label d-flex justify-content-between">
+                        <span>Discount Rate (WACC) %</span>
+                        <span id="val-wacc" class="badge">9%</span>
+                    </label>
+                    <input type="range" class="form-range" id="inp-wacc" min="5" max="25" step="0.5" value="9">
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>5%</span>
+                        <span>15%</span>
+                        <span>25%</span>
+                    </div>
+                </div>
+                <div class="app-col flex-grow">
+                    <label class="form-label">Notes</label>
+                    <input type="text" id="note-wacc" class="form-control form-control-sm border-secondary" placeholder="Cost of capital assumption">
+                </div>
+            </div>
+
+            <table class="steel-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th>5</th>
+                        <th>6</th>
+                        <th>7</th>
+                        <th>8</th>
+                        <th>9</th>
+                        <th>10</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-muted">
+                        <td class="text-start text-nowrap" style="width: 15%;">Disc. Factor</td>
+                        <td id="df-1"></td>
+                        <td id="df-2"></td>
+                        <td id="df-3"></td>
+                        <td id="df-4"></td>
+                        <td id="df-5"></td>
+                        <td id="df-6"></td>
+                        <td id="df-7"></td>
+                        <td id="df-8"></td>
+                        <td id="df-9"></td>
+                        <td id="df-10"></td>
+                    </tr>
+                    <tr class="fw-bold text-success">
+                        <td class="text-start text-nowrap">PV of FCF ($B)</td>
+                        <td id="pv-1"></td>
+                        <td id="pv-2"></td>
+                        <td id="pv-3"></td>
+                        <td id="pv-4"></td>
+                        <td id="pv-5"></td>
+                        <td id="pv-6"></td>
+                        <td id="pv-7"></td>
+                        <td id="pv-8"></td>
+                        <td id="pv-9"></td>
+                        <td id="pv-10"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-end mb-4 mt-3">
+                <div class="p-2 border rounded border-secondary">
+                    <span class="text-muted me-2 small">Total PV (Years 1-10):</span>
+                    <span id="out-sum-pv" class="fw-bold text-success font-monospace">$0.00B</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COLUMN 3: Terminal Value & Intrinsic Price -->
+    <div class="panel flex-grow app-col">
+        <div class="panel-header">
+            <div class="panel-title">Terminal Value & Intrinsic Price</div>
+        </div>
+        <div class="panel-content">
+            <div class="h6">STEP 7 to 10 — Terminal Value & Intrinsic Price</div>
+            <div class="app-row mb-3" style="gap: 1rem;">
+                <div class="app-col flex-grow">
+                    <label class="form-label d-flex justify-content-between">
+                        <span>Terminal Growth (g) %</span>
+                        <span id="val-tg" class="badge">3%</span>
+                    </label>
+                    <input type="range" class="form-range" id="inp-tg" min="0" max="10" step="0.1" value="3">
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>0%</span>
+                        <span>Long Term GDP (3%)</span>
+                        <span>10%</span>
+                    </div>
+                </div>
+                <div class="app-col flex-grow">
+                    <label class="form-label">Notes</label>
+                    <input type="text" id="note-tg" class="form-control form-control-sm border-secondary" placeholder="GDP-like perpetuity rate">
+                </div>
+            </div>
+            <table class="steel-table">
+                <thead class="small text-muted">
+                    <tr>
+                        <th>Metric</th>
+                        <th>Manual Override / Value</th>
+                        <th>Formula / Logic</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Terminal Value (TV)</td>
+                        <td><input type="number" id="inp-out-tv" class="form-control form-control-sm border-secondary text-end font-monospace" step="0.1"></td>
+                        <td class="small text-muted">FCF10 × (1+g) / (WACC - g)</td>
+                        <td><input type="text" id="note-out-tv" class="form-control form-control-sm border-secondary" placeholder="Why override?"></td>
+                    </tr>
+                    <tr>
+                        <td>PV of TV</td>
+                        <td><input type="number" id="inp-out-pv-tv" class="form-control form-control-sm border-secondary text-end font-monospace" step="0.1"></td>
+                        <td class="small text-muted">TV / (1 + WACC)^10</td>
+                        <td><input type="text" id="note-out-pv-tv" class="form-control form-control-sm border-secondary"></td>
+                    </tr>
+                    <tr>
+                        <td>Terminal Weight (%)</td>
+                        <td class="text-end pe-3"><span id="out-terminal-weight" class="badge font-monospace fs-6"></span></td>
+                        <td class="small text-muted">PV(TV) / EV (Model reliance on terminal value)</td>
+                        <td><input type="text" id="note-out-weight" class="form-control form-control-sm border-secondary" placeholder="High weight = High risk"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-info fw-bold">Enterprise Value (EV)</td>
+                        <td><input type="number" id="inp-out-ev" class="form-control form-control-sm border-secondary text-end font-monospace" step="0.1"></td>
+                        <td class="small text-muted">Sum(PV of FCF 1-10) + PV(TV)</td>
+                        <td><input type="text" id="note-out-ev" class="form-control form-control-sm border-secondary"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Equity Value</td>
+                        <td><input type="number" id="inp-out-equity" class="form-control form-control-sm fw-bold border-secondary text-end font-monospace" step="0.1"></td>
+                        <td class="small text-muted">EV - Net Debt</td>
+                        <td><input type="text" id="note-out-equity" class="form-control form-control-sm border-secondary"></td>
+                    </tr>
+                    <tr class="table-success">
+                        <td class="fw-bold">Intrinsic Value per Share</td>
+                        <td><input type="number" id="inp-out-price" class="form-control form-control-sm fw-bold border-secondary text-end font-monospace" step="0.01"></td>
+                        <td class="small">Equity Value / Shares Out.</td>
+                        <td><input type="text" id="note-out-price" class="form-control form-control-sm border-secondary"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="mt-3 text-end">
+                <button class="sf-btn" id="btn-reset-dcf" title="Reset to Defaults">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+                <button id="btn-finalize-dcf" class="sf-btn sf-btn-primary">
+                    <i class="bi bi-check-circle-fill me-2"></i>Commit to Thesis
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="panel-footer">
+    <span id="dcf-ticker" class="sf-btn"></span>
+</div>

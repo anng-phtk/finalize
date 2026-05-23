@@ -14,11 +14,16 @@ class EventBus {
     }
 
     emit<K extends keyof AppEventsMap>(eventName:K, data:AppEventsMap[K]): void {
+        // Bus Conductor: broadcast activity
+        if (eventName !== 'System:EventBus:Activity' as any) {
+            this.emit('System:EventBus:Activity' as any, { eventName: String(eventName), payload: data });
+        }
+
         if (!this.handlers.has(eventName)) return;
 
         this.handlers.get(eventName)?.forEach( (handler:Function) => {
             handler(data);
-        })
+        });
     }
 }
 

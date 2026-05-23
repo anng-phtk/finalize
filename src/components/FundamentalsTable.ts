@@ -4,6 +4,8 @@ import { eventBus } from "../core/EventBus";
 import { formatCell, humanizeMetric } from "../core/helper";
 import { fundamentalsStore } from "../store/FundamentalsStore";
 
+declare const XLSX: any;
+
 export class FundamentalsTable extends Component {
     constructor(container: string, path: string) {
         super(container, path);
@@ -25,6 +27,15 @@ export class FundamentalsTable extends Component {
             }
         });
         this.eventHandles.push(chartHandle);
+
+        const btnTsv = this.getElement('btn-export-tsv');
+        if (btnTsv) btnTsv.onclick = () => this.exportData('clipboard');
+        
+        const btnCsv = this.getElement('btn-export-csv');
+        if (btnCsv) btnCsv.onclick = () => this.exportData('csv');
+        
+        const btnXlsx = this.getElement('btn-export-xlsx');
+        if (btnXlsx) btnXlsx.onclick = () => this.exportData('xlsx');
     }
 
     private currentTicker: string = '';
@@ -43,6 +54,60 @@ export class FundamentalsTable extends Component {
             this.renderRows(data.rows);
         } catch (error) {
             console.error('Error rendering table:', error);
+        }
+    }
+
+    private exportData(format: 'clipboard' | 'csv' | 'xlsx'): void {
+        if (!this.currentData || !this.currentTicker) return;
+
+        const aoa: any[][] = [];
+        
+        const headerRow = ['Metric', ...this.currentData.periods];
+        aoa.push(headerRow);
+
+        this.currentData.rows.forEach(row => {
+            if (row.defaultVisible === false) return; 
+            const exportData = row.data.map(val => val == null ? 'null' : val);
+            const dataRow = [humanizeMetric(row.label), ...exportData];
+            aoa.push(dataRow);
+        });
+
+        if (typeof XLSX === 'undefined') {
+            console.error('SheetJS (XLSX) is not loaded.');
+            return;
+        }
+
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+        for (const key in ws) {
+            if (!ws[key] || ws[key].t !== 'n') continue;
+            const val = ws[key].v;
+            if (Math.abs(val) >= 1000000 && Number.isInteger(val)) {
+                ws[key].z = '#,##0';
+            } else if (!Number.isInteger(val)) {
+                ws[key].z = '0.00';
+            }
+        }
+
+        if (format === 'clipboard') {
+            const csv = XLSX.utils.sheet_to_csv(ws, { FS: ',', display: true });
+            navigator.clipboard.writeText(csv).then(() => {
+                console.log('CSV copied to clipboard!');
+                // eventBus.emit('App:Toast', { message: 'CSV copied to clipboard!' });
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        } else if (format === 'csv') {
+            const csv = XLSX.utils.sheet_to_csv(ws, { FS: ',', display: true });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${this.currentTicker}_fundamentals.csv`;
+            link.click();
+        } else if (format === 'xlsx') {
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Fundamentals");
+            XLSX.writeFile(wb, `${this.currentTicker}_fundamentals.xlsx`);
         }
     }
 

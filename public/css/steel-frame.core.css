@@ -122,7 +122,7 @@ body {
 
 .layout-footer {
     grid-area: footer;
-    height: 330px;
+    height: 45vh;
     min-height: 30px;
     overflow: hidden;
     transition: height 0.3s ease-in-out, min-height 0.3s ease-in-out;
@@ -187,7 +187,7 @@ body {
 
 
 .expanded-vertical {
-    height: 80vh;
+    height: 60vh;
 }
 
 /**
@@ -274,7 +274,7 @@ body {
     /* enforce child scrolling */
     width: 100%;
     /* fill parent container */
-    height: 35px;
+    min-height: 35px;
 }
 
 .pane-title>* {
@@ -365,7 +365,8 @@ body {
 }
 
 /* All buttons inside .title-ctrl – minimal styling, no heavy borders */
-.title-ctrl>button {
+.title-ctrl>button,
+.panel-ctrl>button {
     background-color: transparent;
     border: 1px solid var(--sf-gray-4);
     color: var(--sf-gray-9);

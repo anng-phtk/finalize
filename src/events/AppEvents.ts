@@ -1,11 +1,44 @@
-import type { 
-    ReportTypes, 
-    ToolbarFetchRequest, 
-    ChartSeries, 
-    PeerChartMetric 
+import type {
+    ReportTypes,
+    ToolbarFetchRequest,
+    ChartSeries,
+    PeerChartMetric
 } from "../contracts/FundamentalsContracts";
 
-export type AppEventsMap = FundamentalsEventsMap & WatchListEventsMap & ToolbarEventsMap & PeerComparisonEventsMap & FilingsEventsMap;
+export type AppEventsMap = FundamentalsEventsMap & WatchListEventsMap & ToolbarEventsMap & PeerComparisonEventsMap & FilingsEventsMap & ToastEventsMap & SystemEventsMap & InsightsEventsMap & ValuationEventsMap;
+
+export interface ValuationEventsMap {
+    'Valuation:Model:Load': { ticker: string; refresh: boolean };
+    'Valuation:Model:Finalized': { ticker: string; data: any };
+}
+
+type InsightsEventsMap = {
+    'Insights:DataReady': {
+        ticker: string;
+        data: any;
+    };
+    'KeyEvents:DataReady': {
+        ticker: string;
+        data: any;
+    };
+    'PriceHistory:DataReady': {
+        ticker: string;
+        data: any;
+    };
+};
+
+type SystemEventsMap = {
+    'System:EventBus:Activity': {
+        eventName: string;
+        payload: any;
+    };
+};
+
+type ToastEventsMap = {
+    'Request:Sent': { message: string };
+    'Request:InProgress': { message: string };
+    'Request:Completed': { message: string, type?: 'success' | 'error' };
+};
 
 type FilingsEventsMap = {
     'Filings:History:DataReady': {
@@ -14,6 +47,11 @@ type FilingsEventsMap = {
     'Filings:History:DataError': {
         ticker: string;
         cause?: unknown;
+    };
+    'FilingsReader:DataReady': {
+        ticker: string;
+        period: string;
+        data: import('../contracts/FilingsContracts').FilingTextResponse;
     };
 };
 
@@ -95,4 +133,6 @@ type ToolbarEventsMap = {
         peers: string[];
     };
     'Toolbar:Clear:Clicked': void;
+    'Toolbar:Insights:Requested': { ticker: string, refresh: boolean };
+    'Toolbar:Valuation:Requested': { ticker: string, refresh: boolean };
 }

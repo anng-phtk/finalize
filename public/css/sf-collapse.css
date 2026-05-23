@@ -1,0 +1,26 @@
+/**
+ * Steel Frame Collapse Utilities
+ * Provides classes for expanding and collapsing panels.
+ */
+
+/* Collapse utility (structural only – hides content, keeps handle) */
+.collapsed {
+    width: 30px;
+}
+
+.collapsed-vertical {
+    height: 30px;
+}
+
+.collapsed > :not(.collapse-handle),
+.collapsed-vertical > :not(.collapse-handle) {
+    display: none;
+}
+
+.expanded {
+    width: 40vw;
+}
+
+.expanded-vertical {
+    height: 80vh;
+}

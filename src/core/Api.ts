@@ -1,4 +1,4 @@
-import type { FilingHistoryResponse } from "../contracts/FilingsContracts";
+import type { FilingHistoryResponse, FilingTextResponse } from "../contracts/FilingsContracts";
 import type { FundamentalsRequest, FundamentalsResponse } from "../contracts/FundamentalsContracts";
 import type { ResearchDataResponse } from "../contracts/WatchlistContracts";
 
@@ -17,12 +17,13 @@ export class Api {
         return rawData;
     }
 
-    async fetchFilingText(ticker: string, period: string, url: string): Promise<string> {
+    async fetchFilingText(ticker: string, period: string, url: string): Promise<FilingTextResponse> {
         console.log(`Requesting filing text for ${ticker} at ${period}: ${url}`);
-        // This is a placeholder for the actual API call
-        // const res = await fetch(`${this.BASE_URL}/api/filing-text?url=${encodeURIComponent(url)}`);
-        // return await res.text();
-        return `Mock filing text for ${ticker} (${period})`;
+        const res = await fetch(`${this.BASE_URL}/api/filings/parse?url=${encodeURIComponent(url)}`);
+        if (!res.ok) {
+            throw new Error(`${res.status}: ${res.statusText}: Server returned an error for ${ticker}.`);
+        }
+        return await res.json() as FilingTextResponse;
     }
 
     async fetchFilingHistory(ticker: string, refresh: boolean = false): Promise<FilingHistoryResponse> {
@@ -35,25 +36,6 @@ export class Api {
     }
 
     async fetchResearchData(ticker: string, refresh: boolean = false): Promise<ResearchDataResponse> {
-        /**
-         * Data shape
-            {
-            "symbol": "AAPL",
-            "beta": 1.065,
-            "analyst": {
-                "averageRating": "1.9 - Buy",
-                "targetMeanPrice": 305.28094,
-                "targetHighPrice": 400,
-                "targetLowPrice": 215,
-                "numberOfAnalysts": 42
-            },
-            "valuation": {
-
-            },
-            "source": "yahoo",
-            "fetchedAt": "2026-05-12T19:52:43.185Z"
-            }
-         */
         const url = `${this.BASE_URL}/api/quote/${ticker}?refresh=${String(refresh)}`;
         const res = await fetch(url);
         if (!res.ok) {
@@ -62,6 +44,33 @@ export class Api {
         const rawData = await res.json() as ResearchDataResponse;
 
         return rawData;
+    }
+
+    async fetchStockInsights(ticker: string, refresh: boolean = false): Promise<any> {
+        const url = `${this.BASE_URL}/api/quote/${ticker}/insights?refresh=${String(refresh)}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+            throw new Error(`${res.status}: ${res.statusText}: Failed to fetch insights for ${ticker}.`);
+        }
+        return await res.json();
+    }
+
+    async fetchFmpInsights(ticker: string, refresh: boolean = false): Promise<any> {
+        const url = `${this.BASE_URL}/api/insights/${ticker}?refresh=${String(refresh)}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+            throw new Error(`${res.status}: ${res.statusText}: Failed to fetch key events for ${ticker}.`);
+        }
+        return await res.json();
+    }
+
+    async fetchPriceHistory(ticker: string, refresh: boolean = false): Promise<any> {
+        const url = `${this.BASE_URL}/api/quote/${ticker}/history?refresh=${String(refresh)}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+            throw new Error(`${res.status}: ${res.statusText}: Failed to fetch price history for ${ticker}.`);
+        }
+        return await res.json();
     }
 }
 

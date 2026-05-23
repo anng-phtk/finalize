@@ -12,7 +12,7 @@ export class Toolbar extends Component {
     }
 
     protected override bindEvents(): void {
-        this.getElement<HTMLButtonElement>('btn-fetch').addEventListener('click', (evt: Event) => {
+        this.getElement<HTMLButtonElement>('btn-fetch').addEventListener('click', () => {
             const inTicker: string = this.getElement<HTMLInputElement>('in-ticker').value || '';
 
             if (!inTicker) return; // show a toast 
@@ -56,8 +56,31 @@ export class Toolbar extends Component {
         });
 
         this.getElement('btn-clear').addEventListener('click', () => {
-            eventBus.emit("Toolbar:Clear:Clicked", {});
+            eventBus.emit("Toolbar:Clear:Clicked", undefined);
         });
+
+        this.getElement('btn-insights').addEventListener('click', () => {
+            if (!this.getToolbarState().ticker) return;
+            eventBus.emit("Toolbar:Insights:Requested", this.getToolbarState());
+        });
+
+        this.getElement('btn-valuation').addEventListener('click', () => {
+            if (!this.getToolbarState().ticker) return;
+            eventBus.emit("Toolbar:Valuation:Requested", this.getToolbarState());
+        });
+    }
+
+    getToolbarState(): ToolbarFetchRequest {
+        const inTicker: string = this.getElement<HTMLInputElement>('in-ticker').value || '';
+        const selReportType: reportType = this.toReportType(this.getElement<HTMLSelectElement>('sel-reportType').value);
+        const cbRefresh: boolean = this.getElement<HTMLInputElement>('cb-refresh').checked || false;
+        const inPeers: string[] = [this.getElement<HTMLInputElement>('in-peer-1').value || '', this.getElement<HTMLInputElement>('in-peer-2').value || '', this.getElement<HTMLInputElement>('in-peer-3').value || ''];
+        return {
+            ticker: inTicker,
+            formType: selReportType,
+            refresh: cbRefresh,
+            peers: inPeers.filter(val => val.trim() !== '')
+        }
     }
 
     setDefaults(ticker: string = 'AAPL', selReportType: reportType = 'ANNUAL', refresh: boolean = false, peers: string[] = ['']) {

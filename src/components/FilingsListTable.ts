@@ -4,15 +4,12 @@ import { filingsStore } from "../store/FilingsStore";
 import type { FilingHistoryResponse } from "../contracts/FilingsContracts";
 
 export class FilingsListTable extends Component {
-    private currentTicker: string = '';
-
     constructor(container: string, path: string) {
         super(container, path);
     }
 
     protected override bindEvents(): void {
         const handle = eventBus.on('Filings:History:DataReady', (payload) => {
-            this.currentTicker = payload.ticker;
             const data = filingsStore.get(payload.ticker);
             if (data) {
                 this.renderTable(data);

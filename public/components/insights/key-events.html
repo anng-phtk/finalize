@@ -1,0 +1,37 @@
+<div class="panel-header">
+    <div class="panel-icon">
+        <i class="bi bi-calendar-event-fill" style="color: #0d6efd;"></i>
+    </div>
+    <div class="panel-title">Key Events</div>
+    <div class="panel-ctrl">
+        <button id="btn-collapse-earnings-calendar" class="btn-ctrl">
+            <i class="bi bi-pin-angle"></i>
+        </button>
+    </div>
+</div>
+<div class="panel-content" style="padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+    <!-- Earnings / Dividends Calendar -->
+    <div>
+        <div style="font-weight: bold; font-size: 0.8rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--sf-border); padding-bottom: 0.25rem; text-transform: uppercase; color: var(--sf-gray-9);">Calendar Events</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div style="background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; border: 1px solid var(--sf-border);">
+                <div style="font-size: 0.65rem; color: var(--sf-gray-10); font-weight: 600;">Earnings Date</div>
+                <div id="calendar-earnings-date" style="font-weight: bold; font-size: 0.8rem; margin-top: 0.25rem;">N/A</div>
+                <div id="calendar-earnings-eps" style="font-size: 0.7rem; color: var(--sf-gray-9); margin-top: 0.15rem;">Est. EPS: N/A</div>
+            </div>
+            <div style="background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; border: 1px solid var(--sf-border);">
+                <div style="font-size: 0.65rem; color: var(--sf-gray-10); font-weight: 600;">Dividend Event</div>
+                <div id="calendar-dividend-date" style="font-weight: bold; font-size: 0.8rem; margin-top: 0.25rem;">N/A</div>
+                <div id="calendar-dividend-yield" style="font-size: 0.7rem; color: var(--sf-gray-9); margin-top: 0.15rem;">Yield: N/A</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insider Trading -->
+    <div style="display: flex; flex-direction: column; min-height: 150px; flex-grow: 1;">
+        <div style="font-weight: bold; font-size: 0.8rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--sf-border); padding-bottom: 0.25rem; text-transform: uppercase; color: var(--sf-gray-9);">Insider Trading Log</div>
+        <div id="insider-trades-list" style="display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; flex-grow: 1; max-height: 250px;">
+            <div style="font-size: 0.75rem; color: var(--sf-gray-10); text-align: center; padding-top: 1rem;">No data loaded</div>
+        </div>
+    </div>
+</div>

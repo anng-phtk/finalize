@@ -1,0 +1,76 @@
+<div class="panel-header">
+    <div class="panel-icon">
+        <i class="bi bi-lightbulb-fill" style="color: #ffc107;"></i>
+    </div>
+    <div class="panel-title">Stock Insights</div>
+    <div class="panel-ctrl">
+        <button id="btn-collapse-stock-insights" class="btn-ctrl">
+            <i class="bi bi-pin-angle"></i>
+        </button>
+    </div>
+</div>
+<div class="panel-content" style="padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+    <!-- Recommendation Banner -->
+    <div id="insights-recommendation" style="display: flex; align-items: center; justify-content: space-between; background: var(--sf-gray-0); padding: 0.75rem; border-radius: 4px; border: 1px solid var(--sf-border);">
+        <div>
+            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--sf-gray-10); font-weight: 600;">Recommendation</div>
+            <div id="insights-rating" style="font-size: 1.15rem; font-weight: bold; margin-top: 0.25rem;">N/A</div>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--sf-gray-10); font-weight: 600;">Target Price</div>
+            <div id="insights-target" style="font-size: 1.15rem; font-weight: bold; margin-top: 0.25rem;">N/A</div>
+        </div>
+    </div>
+
+    <!-- Outlooks -->
+    <div>
+        <div style="font-weight: bold; font-size: 0.8rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--sf-border); padding-bottom: 0.25rem; text-transform: uppercase; color: var(--sf-gray-9);">Outlooks</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+            <div style="background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; text-align: center; border: 1px solid var(--sf-border);">
+                <div style="font-size: 0.65rem; color: var(--sf-gray-10); font-weight: 600;">Short Term</div>
+                <div id="outlook-short" style="font-weight: bold; font-size: 0.8rem; margin-top: 0.25rem;">N/A</div>
+            </div>
+            <div style="background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; text-align: center; border: 1px solid var(--sf-border);">
+                <div style="font-size: 0.65rem; color: var(--sf-gray-10); font-weight: 600;">Intermediate</div>
+                <div id="outlook-intermediate" style="font-weight: bold; font-size: 0.8rem; margin-top: 0.25rem;">N/A</div>
+            </div>
+            <div style="background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; text-align: center; border: 1px solid var(--sf-border);">
+                <div style="font-size: 0.65rem; color: var(--sf-gray-10); font-weight: 600;">Long Term</div>
+                <div id="outlook-long" style="font-weight: bold; font-size: 0.8rem; margin-top: 0.25rem;">N/A</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technicals -->
+    <div>
+        <div style="font-weight: bold; font-size: 0.8rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--sf-border); padding-bottom: 0.25rem; text-transform: uppercase; color: var(--sf-gray-9);">Technical Levels</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+            <div style="background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; text-align: center; border: 1px solid var(--sf-border);">
+                <div style="font-size: 0.65rem; color: var(--sf-gray-10); font-weight: 600;">Support</div>
+                <div id="tech-support" style="font-weight: bold; font-size: 0.8rem; margin-top: 0.25rem;">N/A</div>
+            </div>
+            <div style="background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; text-align: center; border: 1px solid var(--sf-border);">
+                <div style="font-size: 0.65rem; color: var(--sf-gray-10); font-weight: 600;">Resistance</div>
+                <div id="tech-resistance" style="font-weight: bold; font-size: 0.8rem; margin-top: 0.25rem;">N/A</div>
+            </div>
+            <div style="background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; text-align: center; border: 1px solid var(--sf-border);">
+                <div style="font-size: 0.65rem; color: var(--sf-gray-10); font-weight: 600;">Stop Loss</div>
+                <div id="tech-stoploss" style="font-weight: bold; font-size: 0.8rem; margin-top: 0.25rem;">N/A</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Valuation -->
+    <div>
+        <div style="font-weight: bold; font-size: 0.8rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--sf-border); padding-bottom: 0.25rem; text-transform: uppercase; color: var(--sf-gray-9);">Valuation Insight</div>
+        <div id="valuation-desc" style="font-size: 0.75rem; line-height: 1.4; color: var(--sf-gray-9); background: var(--sf-gray-0); padding: 0.5rem; border-radius: 4px; border: 1px solid var(--sf-border);">N/A</div>
+    </div>
+
+    <!-- Significant Developments -->
+    <div style="display: flex; flex-direction: column; min-height: 120px; flex-grow: 1;">
+        <div style="font-weight: bold; font-size: 0.8rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--sf-border); padding-bottom: 0.25rem; text-transform: uppercase; color: var(--sf-gray-9);">Significant Developments</div>
+        <div id="sig-devs-list" style="display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; flex-grow: 1; max-height: 200px;">
+            <div style="font-size: 0.75rem; color: var(--sf-gray-10); text-align: center; padding-top: 1rem;">No data loaded</div>
+        </div>
+    </div>
+</div>

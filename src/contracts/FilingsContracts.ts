@@ -10,3 +10,11 @@ export interface FilingHistoryResponse {
     ticker: string;
     rows: FilingHistoryRow[];
 }
+
+export interface FilingItem {
+    confidence: number;
+    tables: string[];
+    text: string;
+}
+
+export type FilingTextResponse = Record<string, FilingItem>;

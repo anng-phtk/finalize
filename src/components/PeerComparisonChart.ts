@@ -62,7 +62,7 @@ export class PeerComparisonChart extends Component {
             const isRatio = metric.unit === '%' || metric.unit === 'pure';
             const yAxisID = isRatio ? 'y-axis-ratio' : 'y-axis-currency';
 
-            metric.peersData.forEach((peer, pIdx) => {
+            metric.peersData.forEach((peer: any, pIdx: number) => {
                 // const color = tickerColors[peer.ticker] || defaultColors[pIdx % defaultColors.length];
                 const color = defaultColors[pIdx % defaultColors.length];
 
@@ -142,7 +142,7 @@ export class PeerComparisonChart extends Component {
         // Simplified legend: show metrics and peer info
         metrics.forEach(m => {
             const item = document.createElement('div');
-            item.innerHTML = `<strong>${m.label}</strong>: ${m.peersData.map(p => p.ticker).join(', ')}`;
+            item.innerHTML = `<strong>${m.label}</strong>: ${m.peersData.map((p: any) => p.ticker).join(', ')}`;
             legend.appendChild(item);
         });
     }

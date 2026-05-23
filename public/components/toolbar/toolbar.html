@@ -9,17 +9,20 @@
     <fieldset class="sf-fieldset sf-fieldset--peers">
         <legend>Peers</legend>
 
-        <input id="in-peer-1" name="peer1" type="text" value="GOOG" placeholder="Peer 1" autocomplete="off" spellcheck="false">
+        <input id="in-peer-1" name="peer1" type="text" value="GOOG" placeholder="Peer 1" autocomplete="off"
+            spellcheck="false">
         <button id="btn-swap-1" class="sf-btn" type="button" aria-label="Swap ticker with peer 1">
             <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
         </button>
 
-        <input id="in-peer-2" name="peer2" type="text" value="MSFT" placeholder="Peer 2" autocomplete="off" spellcheck="false">
+        <input id="in-peer-2" name="peer2" type="text" value="MSFT" placeholder="Peer 2" autocomplete="off"
+            spellcheck="false">
         <button id="btn-swap-2" class="sf-btn" type="button" aria-label="Swap ticker with peer 2">
             <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
         </button>
 
-        <input id="in-peer-3" name="peer3" type="text" value="AMZN" placeholder="Peer 3" autocomplete="off" spellcheck="false">
+        <input id="in-peer-3" name="peer3" type="text" value="AMZN" placeholder="Peer 3" autocomplete="off"
+            spellcheck="false">
         <button id="btn-swap-3" class="sf-btn" type="button" aria-label="Swap ticker with peer 3">
             <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
         </button>
@@ -49,16 +52,30 @@
             <span>Fetch</span>
         </button>
 
-        <button id="btn-compare" class="sf-btn sf-btn--secondary" type="button">
-            <i class="bi bi-columns-gap" aria-hidden="true"></i>
-            <span>Compare</span>
-        </button>
-
-
-        <button id="btn-clear" class="sf-btn sf-btn--danger" type="button">
+        </button><button id="btn-clear" class="sf-btn sf-btn--danger" type="button">
             <i class="bi bi-trash" aria-hidden="true"></i>
             <span>Clear</span>
         </button>
+
+    </fieldset>
+
+    <fieldset class="sf-fieldset sf-fieldset--actions" aria-label="Actions">
+        <legend>Tools</legend>
+
+        <button id="btn-compare" class="btn btn-sm btn-outline-warning" type="button">
+            <i class="bi bi-columns-gap" aria-hidden="true"></i>
+            <span>Compare</span>
+        </button>
+        <button id="btn-insights" class="btn btn-sm btn-outline-primary" type="button">
+            <i class="bi bi-eye" aria-hidden="true"></i>
+            <span>Insights</span>
+        </button>
+        <button id="btn-valuation" class="btn btn-sm btn-outline-success" type="button">
+            <i class="bi bi-calculator" aria-hidden="true"></i>
+            <span>Valuation</span>
+        </button>
+
+
     </fieldset>
 
     <fieldset class="sf-fieldset sf-fieldset--session">
